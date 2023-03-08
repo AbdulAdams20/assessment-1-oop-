@@ -6,114 +6,114 @@ using System.Linq;
 
 namespace CMP1903M_A01_2223
 {
-    public class Pack
-    {
-        private List<Card> pack; // A list to store the cards in the pack
+    using System;
+using System.Collections.Generic;
 
-        // A constructor to initialize the card pack
-        public Pack()
+// The Pack class represents a pack of playing cards, with 52 cards in total.
+public class Pack
+{
+    // Private field to store an array of Card objects.
+    private Card[] cards;
+
+    // Constructor to initialize the array with 52 cards.
+    public Pack()
+    {
+        // Define an array of ranks and suits.
+        string[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+        string[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
+
+        // Initialize the cards array with 52 cards.
+        cards = new Card[52];
+        int index = 0;
+        foreach (string suit in suits)
         {
-            pack = new List<Card>();
-            // Loop through each suit
-            foreach (Suit suit in Enum.GetValues(typeof(Suit)))
+            foreach (string rank in ranks)
             {
-                // Loop through each rank
-                foreach (Rank rank in Enum.GetValues(typeof(Rank)))
-                {
-                    // Add a new card to the pack
-                    pack.Add(new Card(suit, rank));
-                }
+                cards[index] = new Card(rank, suit);
+                index++;
             }
         }
+    }
 
-        // A method to shuffle the card pack based on the type of shuffle
-        public static bool ShuffleCardPack(int typeOfShuffle)
+    // Shuffle the pack of cards using the Fisher-Yates shuffle algorithm.
+    public static bool shuffleCardPack(int typeOfShuffle)
+    {
+        // Check the type of shuffle requested.
+        if (typeOfShuffle == 1)
         {
-            // Check if the type of shuffle is valid
-            if (typeOfShuffle < 1 || typeOfShuffle > 3)
-            {
-                return false;
-            }
-
-            // Create a new Random object for shuffling
+            // Fisher-Yates shuffle algorithm.
             Random rand = new Random();
-
-            // Perform the shuffle based on the type of shuffle
-            switch (typeOfShuffle)
+            int n = cards.Length;
+            for (int i = n - 1; i > 0; i--)
             {
-                case 1: // Fisher-Yates Shuffle
-                    for (int i = pack.Count - 1; i > 0; i--)
-                    {
-                        int j = rand.Next(i + 1);
-                        Card temp = pack[i];
-                        pack[i] = pack[j];
-                        pack[j] = temp;
-                    }
-                    break;
-                case 2: // Riffle Shuffle
-                    int half = pack.Count / 2;
-                    List<Card> leftHalf = pack.Take(half).ToList();
-                    List<Card> rightHalf = pack.Skip(half).ToList();
-                    pack.Clear();
-                    while (leftHalf.Count > 0 && rightHalf.Count > 0)
-                    {
-                        int shuffleType = rand.Next(1, 3);
-                        int count = shuffleType == 1 ? rand.Next(1, 3) : 1;
-                        count = Math.Min(count, Math.Min(leftHalf.Count, rightHalf.Count));
-                        switch (shuffleType)
-                        {
-                            case 1: // Overhand Shuffle
-                                pack.AddRange(leftHalf.Take(count));
-                                leftHalf.RemoveRange(0, count);
-                                break;
-                            case 2: // Hindu Shuffle
-                                pack.AddRange(rightHalf.Take(count));
-                                rightHalf.RemoveRange(0, count);
-                                break;
-                        }
-                    }
-                    pack.AddRange(leftHalf);
-                    pack.AddRange(rightHalf);
-                    break;
-                case 3: // No Shuffle
-                    // Do nothing
-                    break;
+                int j = rand.Next(i + 1);
+                Card temp = cards[j];
+                cards[j] = cards[i];
+                cards[i] = temp;
             }
             return true;
         }
-
-        // A method to deal one card from the pack
-        public static Card DealCard()
+        else if (typeOfShuffle == 2)
         {
-            // Check if there are any cards left in the pack
-            if (pack.Count == 0)
-            {
-                return null;
-            }
-
-            // Remove and return the top card from the pack
-            Card card = pack[0];
-            pack.RemoveAt(0);
-            return card;
+            // Riffle shuffle algorithm.
+            // TODO: Implement riffle shuffle.
+            return false;
         }
-
-        // A method to deal a specified number of cards from the pack
-        public static List<Card> DealCards(int amount)
+        else if (typeOfShuffle == 3)
         {
-            List<Card> cards = new List<Card>();
-            for (int i = 0; i < amount; i++)
-            {
-                Card card = DealCard();
-                if (card != null)
-                {
-                    cards.Add(card);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            return cards;
+            // No shuffle.
+            return true;
+        }
+        else
+        {
+            // Invalid shuffle type.
+            return false;
         }
     }
+
+    // Deal a single card from the pack.
+    public static Card dealCard()
+    {
+        // Check if there are any cards left in the pack.
+        if (cards.Length > 0)
+        {
+            // Remove the top card from the pack and return it.
+            Card card = cards[0];
+            List<Card> temp = new List<Card>(cards);
+            temp.RemoveAt(0);
+            cards = temp.ToArray();
+            return card;
+        }
+        else
+        {
+            // No cards left in the pack.
+            return null;
+        }
+    }
+
+    // Deal a specified number of cards from the pack.
+    public static List<Card> dealCard(int amount)
+    {
+        // Check if there are enough cards left in the pack.
+        if (cards.Length >= amount)
+        {
+            // Remove the top cards from the pack and return them as a list.
+        List<Card> dealtCards = new List<Card>();
+        for (int i = 0; i < amount; i++)
+        {
+            dealtCards.Add(cards[i]);
+        }
+        List<Card> temp = new List<Card>(cards);
+        temp.RemoveRange(0, amount);
+        cards = temp.ToArray();
+        return dealtCards;
+    }
+    else
+    {
+        // Not enough cards left in the pack.
+        return null;
+    }
+}
+
+
 }
