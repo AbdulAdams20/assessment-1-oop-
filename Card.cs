@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 namespace CMP1903M_A01_2223
 {
-    class Card
+    public class Card
     {
-        //Base for the Card class.
-        //Value: numbers 1 - 13
-        //Suit: numbers 1 - 4
-        //The 'set' methods for these properties could have some validation
-        public int Value { get; set; }
-        public int Suit { get; set; }
+        public enum Suit { Hearts, Diamonds, Clubs, Spades };
+        public enum Rank { Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
+
+        public Suit CardSuit { get; set; }
+        public Rank CardRank { get; set; }
+
+        public Card(Suit suit, Rank rank)
+        {
+            CardSuit = suit;
+            CardRank = rank;
+        }
+
+        public override string ToString()
+        {
+            return $"{CardRank} of {CardSuit}";
+        }
     }
+
 }
